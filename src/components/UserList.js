@@ -18,8 +18,26 @@ class UserList extends Component {
                         <img src={user.avatar_url} alt="" height="42" width="42" />
                     </div>
                     <div>
-                        <a href={user.url}>{user.url}</a>
+                        <div>
+                            Name: {user.name? user.name : "-"}
+                        </div>
+                        <div>
+                            URL: <a href={user.url}>{user.url}</a>
+                        </div>
+                        <div>
+                            Public_Repos: {user.public_repos}
+                        </div>
+                        <div>
+                            Company: {user.company? user.company : "-"}
+                        </div>
+                        <div>
+                            Bio: {user.bio? user.bio : "-"}
+                        </div>followers
+                        <div>
+                            Followers: {user.followers? user.followers : "-"}
+                        </div>
                     </div>
+                    <br/>
                 </div>
             )
 
