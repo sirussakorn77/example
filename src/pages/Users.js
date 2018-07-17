@@ -4,6 +4,7 @@ import { CircleLoader } from 'react-spinners'
 import UserList from '../components/UserList'
 import SearchBar from '../components/SearchBar'
 import LoadMoreButton from '../components/LoadMoreButton'
+import { Grid } from 'react-bootstrap'
 
 const styles = {
     spinner: {
@@ -106,7 +107,6 @@ class Users extends Component {
         }, () => {
             if(inputSearch === "")
             {
-                //this.setState({users: users})
                 this.onLoadMore(this.state.limit)
                 return
             }
@@ -135,9 +135,9 @@ class Users extends Component {
                 <div>
                     <SearchBar handleSearch={this.handleSearch}/>
                 
-                    <div align="left">
+                    <Grid align="left">
                         <UserList users={this.state.users} />
-                    </div>
+                    </Grid>
 
                     {this.initLoadMoreButton()}
                 </div>
@@ -145,10 +145,10 @@ class Users extends Component {
         }
 
         return (
-            <div>
+            <Grid>
                 <SearchBar handleSearch={this.handleSearch}/>
                 <div>ไม่พบข้อมูล</div>
-            </div>
+            </Grid>
         )
     }
 }
