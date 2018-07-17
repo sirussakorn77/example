@@ -3,6 +3,7 @@ import axios from 'axios'
 import { CircleLoader } from 'react-spinners'
 import UserList from '../components/UserList'
 import SearchBar from '../components/SearchBar'
+import LoadMoreButton from '../components/LoadMoreButton'
 
 const styles = {
     spinner: {
@@ -17,7 +18,9 @@ class Users extends Component {
         this.state = {
             users: [],
             usersNotFilter: [],
-            loading: true
+            loading: true,
+            limit: 5,
+            inputSearch: ""
         }
     }
 
@@ -28,11 +31,11 @@ class Users extends Component {
                 return res.data
         })
         .then(data => {
-            this.GetAllUserDetails(data)
+            this.getAllUserDetails(data)
         })
     }
 
-    GetAllUserDetails = (users) => {
+    getAllUserDetails = (users) => {
         users.forEach(user => {
             axios.get('https://api.github.com/users/' + user.login)
             .then(res => {
@@ -42,29 +45,73 @@ class Users extends Component {
             .then(data => {
                 this.state.usersNotFilter.push(data)
                 
-                this.setState({
-                    users: this.state.usersNotFilter
-                })
-
-                setTimeout(() => {
-                        this.setState({ loading: false })
-                    }, 1000
-                )
+                this.initUserList()
             })
         })
     }
 
-    handleSearch = (inputSearch) => {
+    initUserList = () => {
         this.setState({
             users: []
         }, () => {
+            var usersLimited = this.state.usersNotFilter.slice(0, this.state.limit).map((user) => {
+                return user
+            })
+    
+            this.setState({
+                users: usersLimited
+            })
+    
+            setTimeout(() => {
+                    this.setState({ loading: false })
+                }, 2000
+            )
+        })
+       
+    }
+
+    initLoadMoreButton = () => {
+        if(this.isEmpty(this.state.inputSearch) && this.isLimitLessThanLengthUsersNotFilter)
+            return <LoadMoreButton onLoadMore={this.onLoadMore} limit={this.state.limit} />
+    }
+
+    isLimitLessThanLengthUsersNotFilter = () => {
+        if(this.state.limit < this.state.usersNotFilter.length)
+            return true
+        
+        return false
+    }
+
+    isEmpty = (value) => {
+        if(value === "")
+            return true
+        
+        return false
+    }
+
+    onLoadMore = (limit) => {
+        this.setState({
+            limit: limit
+        }, () => {
+            this.initUserList()
+        })
+    }
+
+    handleSearch = (inputSearch) => {
+        const users = this.state.users
+
+        this.setState({
+            users: [],
+            inputSearch: inputSearch
+        }, () => {
             if(inputSearch === "")
             {
-                this.setState({users: this.state.usersNotFilter})
+                //this.setState({users: users})
+                this.onLoadMore(this.state.limit)
                 return
             }
 
-            var usersFilter = this.state.usersNotFilter
+            var usersFilter = users
             usersFilter = usersFilter.filter((user) => {
                 return user.name && (user.name.toLowerCase()).search(inputSearch.toLowerCase()) !== -1
             });
@@ -91,6 +138,8 @@ class Users extends Component {
                     <div align="left">
                         <UserList users={this.state.users} />
                     </div>
+
+                    {this.initLoadMoreButton()}
                 </div>
             )
         }
